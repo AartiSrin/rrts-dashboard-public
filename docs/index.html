@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<!--
+  RRTS Static Dashboard
+  AI-GEN: Claude   AI-DATE: 2026-09-08   AI-REVIEW: Pending human review.
+
+  Fully static: this page loads no external scripts or stylesheets. Its only
+  optional outbound requests are basemap tile images, which can be disabled
+  entirely in dashboard.js (DASHBOARD_CONFIG.basemap = "none").
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Russian River Telemetry Study: Monitoring Dashboard</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+
+<div class="chrome"><div class="wrap">
+  <div class="brandrow">
+    <img class="mark" src="assets/swrcb_logo_2.png" alt="California State Water Resources Control Board logo">
+    <div>
+      <div class="t1">Telemetry Research Unit</div>
+      <h1 class="t2">Russian River Telemetry Study | Station Data Viewer</h1>
+    </div>
+    <div class="sp"></div>
+    <div class="freshwrap">
+      <div class="freshrow">
+        <div class="fresh"><span class="dot" id="freshdot"></span><span id="freshtxt">Loading…</span></div>
+        <button type="button" id="themetoggle" class="themetoggle" aria-pressed="false"
+          aria-label="Switch to dark theme" title="Switch to dark theme">
+          <svg class="theme-icon theme-icon-sun" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <circle cx="12" cy="12" r="4.5"></circle>
+            <line x1="12" y1="1.5" x2="12" y2="4"></line>
+            <line x1="12" y1="20" x2="12" y2="22.5"></line>
+            <line x1="4.2" y1="4.2" x2="5.9" y2="5.9"></line>
+            <line x1="18.1" y1="18.1" x2="19.8" y2="19.8"></line>
+            <line x1="1.5" y1="12" x2="4" y2="12"></line>
+            <line x1="20" y1="12" x2="22.5" y2="12"></line>
+            <line x1="4.2" y1="19.8" x2="5.9" y2="18.1"></line>
+            <line x1="18.1" y1="5.9" x2="19.8" y2="4.2"></line>
+          </svg>
+          <svg class="theme-icon theme-icon-moon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"
+            aria-hidden="true" focusable="false">
+            <path d="M20.6 15.1a9 9 0 0 1-11.7-11.7 9 9 0 1 0 11.7 11.7Z"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="note compact hidden" id="internalnote" role="status" aria-live="polite"></div>
+    </div>
+  </div>
+  <div class="tabs" role="tablist" aria-label="Dashboard sections">
+    <button class="tab" role="tab" id="tab-home" aria-controls="p-home" aria-selected="true" data-p="home">Home</button>
+    <button class="tab" role="tab" id="tab-overview" aria-controls="p-overview" aria-selected="false" data-p="overview">Station Overview</button>
+    <button class="tab" role="tab" id="tab-map" aria-controls="p-map" aria-selected="false" data-p="map">Station Map</button>
+    <button class="tab" role="tab" id="tab-detail" aria-controls="p-detail" aria-selected="false" data-p="detail">Station Detail</button>
+    <!-- Compare tab archived for now; see commented <section id="p-compare"> below to restore. -->
+    <!-- <button class="tab" role="tab" id="tab-compare" aria-controls="p-compare" aria-selected="false" data-p="compare">Compare</button> -->
+    <!-- Aquarius Tiers tab archived for now; see commented <section id="p-aquarius"> below to restore. -->
+    <button class="tab" role="tab" id="tab-explore" aria-controls="p-explore" aria-selected="false" data-p="explore">Explore Study Stations</button>
+    <button class="tab" role="tab" id="tab-flood" aria-controls="p-flood" aria-selected="false" data-p="flood">Flood Watch</button>
+    <button class="tab" role="tab" id="tab-download" aria-controls="p-download" aria-selected="false" data-p="download">Download</button>
+    <button class="tab" role="tab" id="tab-help" aria-controls="p-help" aria-selected="false" data-p="help">Help & Resources</button>
+  </div>
+</div></div>
+
+<main id="main" class="wrap" tabindex="-1">
+<div class="note hidden" id="pagenote" role="status" aria-live="polite"></div>
+
+<!-- ================= HOME ================= -->
+<section role="tabpanel" aria-labelledby="tab-home" id="p-home">
+  <div class="home-hero">
+    <img class="home-bg" data-reveal="scale-in" src="assets/russian_river.png" alt="The Russian River winding through a forested valley at golden hour, with mountains in the distance" loading="lazy">
+    <div class="home-text" data-reveal="fade-up">
+      <p>The Russian River Telemetry Study is a research initiative led by the California State Water Resources Control Board to evaluate the use of telemetered monitoring equipment for measuring surface water and groundwater conditions in near real time.</p>
+      <p>The study focuses on installing, upgrading, and evaluating telemetry at monitoring locations throughout the Russian River watershed, including streamflow, reservoir, diversion, and groundwater sites. Data collected through this effort support research into modern water monitoring practices and help inform future telemetry implementation across California.</p>
+      <p>This dashboard provides a high-level view of study stations and available telemetry data. The information presented is intended for research and informational purposes only and does not represent regulatory determinations or compliance evaluations. Data may be incomplete, subject to change, or under review.</p>
+      <p>Participation in the Russian River Telemetry Study is voluntary, and data visibility may vary by station based on study status and data sharing agreements.</p>
+      <p>For additional information about the Telemetry Pilot Project, visit <a href="https://www.waterboards.ca.gov/telemetry/russian-river-study.html" target="_blank" rel="noopener">Russian River Telemetry</a>.</p>
+    </div>
+    <nav class="home-actions" data-reveal="fade-up" aria-label="Jump to a dashboard section">
+      <button type="button" class="home-action" data-p="overview" aria-label="View a status of all current data on the Station Overview tab">Go to "Station Overview" to view a status of all current data</button>
+      <button type="button" class="home-action" data-p="map" aria-label="Locate and view stations on the Station Map tab">Go to "Station Map" to locate and view stations</button>
+      <button type="button" class="home-action" data-p="detail" aria-label="View station data on the Station Details tab">Go to "Station Detail" to view station data</button>
+      <button type="button" class="home-action" data-p="explore" aria-label="Explore study data in depth on the Explore Study Stations tab">Go to "Explore Study Stations" to explore study data in depth</button>
+      <button type="button" class="home-action" data-p="flood" aria-label="View stations with elevated flood risk on the Flood Watch tab">Go to "Flood Watch" to view stations with elevated flood risk</button>
+      <button type="button" class="home-action" data-p="download" aria-label="Download station data on the Download tab">Go to "Download" to download station data</button>
+      <button type="button" class="home-action" data-p="help" aria-label="Get additional help on the Help and Resources tab">Go to "Help & Resources" for additional assistance</button>
+    </nav>
+  </div>
+
+  <div class="split mt">
+  <div class="card" data-reveal="fade-up">
+    <header><div>
+      <h3>Understanding the data sources</h3>
+      <div class="sub">What each of the six data sources on this dashboard measures</div>
+    </div><span class="info-icon" data-tip="Descriptions of Aquarius, USGS, CDEC, SonomaOne, CNRA, and WQX, and how each source fits into the study" aria-label="Descriptions of the data sources shown on this dashboard" tabindex="0">i</span></header>
+    <div class="body">
+      <p>Stations on this dashboard come from six different data sources. The <strong>Aquarius</strong> stations are
+        the study's own telemetered monitoring sites. The other five sources are established reference networks and
+        data exchanges operated by other agencies, shown alongside the study's data to give researchers context for
+        comparison.</p>
+      <div class="help-nav-grid cols-3">
+        <div class="help-nav-item" data-reveal="fade-up">
+          <h4>Aquarius</h4>
+          <p>The Russian River Telemetry Study's own stations. Telemetered equipment installed or upgraded by the
+            study measures streamflow, reservoir, diversion, and groundwater conditions in near real time at
+            volunteer sites throughout the watershed. This is the core dataset the study is evaluating.
+            <a href="https://www.aquaticinformatics.com/products/aquarius/" target="_blank" rel="noopener">Learn more about the Aquarius software</a>.</p>
+        </div>
+        <div class="help-nav-item" data-reveal="fade-up">
+          <h4>USGS</h4>
+          <p>The United States Geological Survey operates a nationwide network of long established streamflow and
+            groundwater gages. USGS data provides a reliable, long term reference that helps researchers compare
+            newly telemetered Aquarius readings against established federal measurements nearby.
+            <a href="https://dashboard.waterdata.usgs.gov/app/nwd/en/?region=lower48&amp;aoi=default" target="_blank" rel="noopener">View the USGS National Water Dashboard</a>.</p>
+        </div>
+        <div class="help-nav-item" data-reveal="fade-up">
+          <h4>CDEC</h4>
+          <p>The California Data Exchange Center, operated by the California Department of Water Resources, collects
+            real time streamflow, reservoir, and precipitation data from stations across the state, including
+            several in the Russian River watershed. CDEC fills in regional coverage alongside the study's own sites.
+            <a href="https://cdec.water.ca.gov/" target="_blank" rel="noopener">Visit the California Data Exchange Center</a>.</p>
+        </div>
+        <div class="help-nav-item" data-reveal="fade-up">
+          <h4>SonomaOne</h4>
+          <p>Sonoma Water, formerly the Sonoma County Water Agency, maintains its own telemetered gages on streams and
+            reservoirs in the county, largely for flood forecasting and water supply management. Including this data
+            adds a local, agency operated perspective that complements the study's research-focused stations.
+            <a href="https://www.sonomawater.org/flood-protection" target="_blank" rel="noopener">View Sonoma Water flood and water level information</a>.</p>
+        </div>
+        <div class="help-nav-item" data-reveal="fade-up">
+          <h4>CNRA</h4>
+          <p>The California Natural Resources Agency publishes periodic groundwater level measurements collected
+            under the Sustainable Groundwater Management Act. Unlike the continuously telemetered sources above,
+            CNRA readings are collected on a periodic schedule.
+            <a href="https://data.cnra.ca.gov/" target="_blank" rel="noopener">Browse the CNRA Open Data portal</a>.</p>
+        </div>
+        <div class="help-nav-item" data-reveal="fade-up">
+          <h4>WQX</h4>
+          <p>The Water Quality Exchange is a shared data format and portal, used by the EPA, USGS, and state and
+            local agencies nationwide, for publishing discrete water quality sample results. WQX stations shown on
+            this dashboard are separate from the continuous streamflow and level telemetry collected from the other public reference sources.
+            <a href="https://www.waterqualitydata.us/" target="_blank" rel="noopener">Visit the Water Quality Portal</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-reveal="fade-up">
+    <div class="body">
+      <figure style="margin:0">
+        <img class="wipe-photo" src="assets/aq_study_station.jpg" alt="A telemetry monitoring station installed at a Russian River Telemetry Study site">
+        <figcaption class="footnote" style="text-align:center;margin-top:8px">A water telemetry monitoring station at a study site</figcaption>
+      </figure>
+    </div>
+  </div>
+  </div>
+
+  <div class="card mt" data-reveal="fade-up">
+    <header><div>
+      <h3>About the telemetry technology</h3>
+      <div class="sub">Why the study is testing telemetered monitoring equipment</div>
+    </div><span class="info-icon" data-tip="Background on what telemetry is and what the study is evaluating" aria-label="Background on the telemetry technology used in this study" tabindex="0">i</span></header>
+    <div class="body">
+      <p><strong>Telemetry</strong> means equipment at a monitoring site automatically measures conditions, such as
+        streamflow, water level, or diversion rate, and transmits those readings to a central system on a regular
+        schedule, often several times an hour. This is different from traditional manual monitoring, where a person
+        has to visit a site, read a gage, and record the value by hand.</p>
+      <p>The study is evaluating whether this kind of equipment can reduce the time and effort it takes volunteer
+        participants to collect and report their water data, and whether it can make that data more complete, more
+        consistent, and more quickly available once it is collected. These are research questions the study is still
+        actively testing at its stations, not conclusions about program wide results.</p>
+      <p class="footnote" style="margin-top:14px">
+        <strong>Note:</strong> This section describes the research goals of the Telemetry Pilot Project. It does not
+        represent a regulatory position or a finding about any individual participant reporting obligations.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+  <!-- ================= STATION OVERVIEW ================= -->
+<section role="tabpanel" aria-labelledby="tab-overview" id="p-overview" class="hidden">
+  <h2 class="sr-only">Station Overview</h2>
+  <div class="grid kpis mt" id="kpirow" data-reveal="fade-up"></div>
+
+  <div class="split mt">
+    <div class="card" data-reveal="fade-up">
+      <header><div>
+        <h3>Reporting activity by source</h3>
+        <div class="sub">Stations, and how many are still reporting</div>
+      </div><div class="legend" role="list" aria-label="Chart color legend">
+        <span role="listitem"><i class="swatch" style="background:var(--s1)"></i>Study station</span>
+        <span role="listitem"><i class="swatch" style="background:var(--s2)"></i>Public reference gage</span>
+        <span role="listitem"><i class="swatch" style="background:var(--s3)"></i>Water-quality program</span>
+      </div><span class="info-icon" data-tip="Stations grouped by data source system, showing how many are reporting in the last 30 days" aria-label="Stations grouped by data source system, showing how many are reporting in the last 30 days" tabindex="0">i</span></header>
+      <div class="body"><div id="srcchart"></div></div>
+    </div>
+    <div class="card" data-reveal="fade-up">
+      <header><div>
+        <h3>Network status of stations reporting data</h3>
+        <div class="sub" id="statussub">All station records</div>
+      </div><span class="info-icon" data-tip="All station records broken down by reporting recency (live, last 30 days, dormant) and access policy level (limited by policy, restricted by policy, setup pending). Setup pending means the station is configured but has not yet ingested data. This reflects the landowner data-sharing agreement, not whether data is actually visible." aria-label="All station records broken down by reporting recency and access policy level" tabindex="0">i</span></header>
+      <div class="body"><div id="statuschart"></div></div>
+    </div>
+  </div>
+
+  <div class="card mt" data-reveal="fade-up">
+    <header><div>
+      <h3>Diversions &amp; underflow wells: pumping status</h3>
+      <div class="sub" id="pumpsub">Latest published flow reading at each station</div>
+    </div><span class="info-icon" data-tip="A station is pumping when its latest flow reading is above zero and not pumping when it is zero. A station with no flow reading in the last few hours shows as no recent data. Select a station to see its full record." aria-label="How pumping status is decided" tabindex="0">i</span></header>
+    <div class="body">
+      <div class="legend" role="list" aria-label="Pumping status key">
+        <span class="l" role="listitem"><i class="pumpdot on" aria-hidden="true"></i>Pumping</span>
+        <span class="l" role="listitem"><i class="pumpdot off" aria-hidden="true"></i>Not pumping</span>
+        <span class="l" role="listitem"><i class="pumpdot nodata" aria-hidden="true"></i>No recent data</span>
+      </div>
+      <div class="pumpgrid" id="pumpgrid" role="list" aria-label="Pumping status by station"></div>
+      <div class="footnote" id="pumpnote"></div>
+    </div>
+  </div>
+
+  <div class="card mt" data-reveal="fade-up">
+    <header><div>
+      <h3>Aquarius stations</h3>
+    </div><span class="info-icon" data-tip="Shows whether each Aquarius station's readings are fully published (Live reporting), partially published, withheld entirely (Data not published), or the station has not yet ingested data (Setup pending). This is different from the Network Status 'Restricted by policy' count, which reflects the access policy level regardless of whether data exists." aria-label="Aquarius stations by data publication status" tabindex="0">i</span></header>
+    <div class="body">
+      <div id="aqaccesschart"></div>
+      <details class="mt" id="aqaccessdetails" open>
+        <summary>Station list <span class="n countpill" id="aq-station-count"></span></summary>
+        <div class="filters" style="margin:8px 0">
+          <label class="fl" for="aq-station-search">Search stations</label>
+          <input class="txt" id="aq-station-search" type="search" placeholder="Filter by name or ID…">
+        </div>
+        <div class="tablescroll aqtable" id="aqaccesslist" tabindex="0" role="region" aria-label="Aquarius stations by data access, table"></div>
+      </details>
+    </div>
+  </div>
+
+  <div class="card mt" data-reveal="fade-up">
+    <header><div>
+      <h3>Top 4 most-measured parameters</h3>
+      <div class="sub">Total record counts, all sources, full period of record</div>
+    </div><span class="info-icon" data-tip="The four parameters with the highest total measurement count across all data sources and the full period of record" aria-label="Top 4 parameters ranked by total measurement count" tabindex="0">i</span></header>
+    <div class="body"><div id="paramchart"></div></div>
+  </div>
+</section>
+
+<!-- ================= STATION MAP ================= -->
+<section role="tabpanel" aria-labelledby="tab-map" id="p-map" class="hidden">
+  <h2 class="sr-only">Station map</h2>
+  <div class="filters mt">
+    <label class="fl" for="map-source">Source</label>
+    <select class="sel" id="map-source"><option value="">All sources</option></select>
+    <label class="fl" for="map-param">Parameter</label>
+    <select class="sel" id="map-param"><option value="">All parameters</option></select>
+    <div class="segs" id="recencyseg" role="group" aria-label="Reporting recency">
+      <button class="seg" aria-pressed="true"  data-d="99999">All</button>
+      <button class="seg" aria-pressed="false" data-d="1">24 h</button>
+      <button class="seg" aria-pressed="false" data-d="7">7 d</button>
+      <button class="seg" aria-pressed="false" data-d="30">30 d</button>
+    </div>
+    <label class="fl" for="map-search">Search</label>
+    <input class="txt" id="map-search" type="search" placeholder="Search station name or ID…">
+    <div class="spacer"></div>
+    <label class="fl" for="basemap-select">Basemap</label>
+    <select class="sel" id="basemap-select">
+      <option value="esri-topo">Esri Topographic</option>
+      <option value="esri-imagery">Esri Imagery</option>
+      <option value="esri-light">Esri Light Gray</option>
+      <option value="esri-street">Esri Streets</option>
+      <option value="none">No basemap (offline)</option>
+    </select>
+  </div>
+
+  <div class="split">
+    <div class="card" style="position:relative" data-reveal="fade-up"><span class="info-icon" data-tip="Interactive map showing station locations, color-coded by source system. A small dot means the exact coordinates are shown. A larger semi-transparent bubble means the location is masked using Constrained Geomasking (random displacement within the HUC12, HUC10, or HUC8 watershed boundary). Marker size also reflects reporting recency." aria-label="Interactive map showing station locations by source and location precision" tabindex="0" style="position:absolute;top:10px;right:10px;z-index:2">i</span><div class="body" style="padding:12px">
+      <div class="legend">
+        <span class="l"><i class="swatch" style="background:var(--s1)"></i>Study station</span>
+        <span class="l"><i class="swatch" style="background:var(--s2)"></i>Public reference gage</span>
+        <span class="l"><i class="swatch" style="background:var(--s3)"></i>Water-quality program</span>
+        <span class="l" style="color:var(--ink-3);white-space:nowrap">
+          <svg width="12" height="12" aria-hidden="true" style="vertical-align:middle"><circle cx="6" cy="6" r="3" fill="var(--s1)" fill-opacity=".9"/></svg>exact
+        </span>
+        <span class="l" style="color:var(--ink-3);white-space:nowrap">
+          <svg width="18" height="18" aria-hidden="true" style="vertical-align:middle"><circle cx="9" cy="9" r="8" fill="var(--s1)" fill-opacity=".18" stroke="var(--s1)" stroke-opacity=".35"/><circle cx="9" cy="9" r="3" fill="var(--s1)" fill-opacity=".9"/></svg>not precise (HUC area)
+        </span>
+      </div>
+      <div class="maparea" id="maparea" tabindex="0" role="region" aria-label="Station map" aria-describedby="mapkeys">
+        <p class="sr-only">Map of station locations. The Stations list next to the map contains the same stations.</p>
+        <div class="tilelayer" id="tilelayer" aria-hidden="true"></div>
+        <div class="mapoverlay" id="mapoverlay"></div>
+        <div class="mappan mapzoom" role="group" aria-label="Pan map">
+          <button type="button" class="pan-n" data-pan="0,-1" title="Pan north" aria-label="Pan north">&uarr;</button>
+          <button type="button" class="pan-w" data-pan="-1,0" title="Pan west"  aria-label="Pan west">&larr;</button>
+          <button type="button" class="pan-e" data-pan="1,0"  title="Pan east"  aria-label="Pan east">&rarr;</button>
+          <button type="button" class="pan-s" data-pan="0,1"  title="Pan south" aria-label="Pan south">&darr;</button>
+        </div>
+        <div class="mapzoom">
+          <button type="button" id="zoomin"  title="Zoom in"  aria-label="Zoom in">+</button>
+          <button type="button" id="zoomout" title="Zoom out" aria-label="Zoom out">&minus;</button>
+          <button type="button" id="zoomfit" title="Zoom to fit all stations" aria-label="Zoom to fit" style="font-size:12px">fit</button>
+        </div>
+        <div class="mapattr" id="mapattr"></div>
+        <div class="tip" id="maptip" aria-hidden="true"></div>
+      </div>
+      <div class="footnote" id="mapfoot"></div>
+      <div class="footnote" id="mapkeys">Use the arrow buttons or drag to pan. Keyboard: focus the map, then use the arrow keys to pan, + and &minus; to zoom and 0 to fit all stations. Tab moves through the station pins; Enter opens a station.</div>
+    </div></div>
+
+    <div>
+      <button type="button" class="view-selected-btn" id="view-selected-btn" aria-label="View the selected station in the Station Detail page">
+        View Selected in Station Detail Page
+      </button>
+      <div class="card" data-reveal="fade-up">
+      <header><div class="sp">
+        <h3>Stations</h3>
+        <div class="sub" id="stationcount" aria-live="polite"></div>
+      </div><span class="info-icon" data-tip="Filterable list of all stations with record counts and location status. Location Status: Precise = exact coordinates shown; In HUC12/HUC10/HUC8 = coordinates masked via Constrained Geomasking (random displacement within that watershed boundary); Hidden = location withheld by landowner, not shown on map." aria-label="Filterable list of all stations with record counts and location status" tabindex="0">i</span></header>
+      <div class="body" style="padding:8px">
+        <div class="tablescroll">
+          <table>
+            <thead><tr>
+              <th class="sortable" data-sort="name" aria-sort="none"><button type="button" class="sortbtn">Station</button></th>
+              <th class="sortable num" data-sort="records" aria-sort="descending"><button type="button" class="sortbtn">Records</button></th>
+              <th class="sortable" data-sort="location" aria-sort="none"><button type="button" class="sortbtn">Location Status</button></th>
+            </tr></thead>
+            <tbody id="stationrows"></tbody>
+          </table>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FLOOD WATCH ================= -->
+<section role="tabpanel" aria-labelledby="tab-flood" id="p-flood" class="hidden">
+  <h2 class="sr-only">Flood watch</h2>
+  <div class="card mt" data-reveal="fade-up">
+    <header><div>
+      <h3>About Flood Watch</h3>
+    </div><span class="info-icon" data-tip="What this page shows, how conditions are scored, and why real-time data matters for flood risk" aria-label="About the Flood Watch page" tabindex="0">i</span></header>
+    <div class="body">
+      <p>This page highlights stations whose most recent streamflow or water-level reading stands out compared to what's typically been seen at that location, so you can quickly spot stations that may be worth a closer look. For most stations, the "Condition" column compares the current reading to that station's own highest reading recorded in this dataset. For a few gage-height stations that are also published National Weather Service (NWS) Advanced Hydrologic Prediction Service (AHPS) flood gauges, marked <span class="pill p-flood-official">Official NWS stage</span> in the table, the condition instead compares the current reading to that gauge's real published NWS action and flood stages.</p>
+      <p>Telemetered stations report far more often than manual readings, so a rising river or stream can be noticed within minutes or hours instead of days, giving operators, emergency managers, and the public more time to make timely flood-risk decisions. See the Help & Resources page for more detail.</p>
+      <p><b>This is not an official flood warning.</b> For official flood forecasts and warnings at every location, see the
+      <a href="https://water.noaa.gov/#@=-96.401081,38.1465724,3.7531828&b=topographic&g=obsFcst,1!1!1!1!1!1!1!1!1!1!1!1!1!1!1!0!0!0!0!0,0.5,1!1!1!1!0,0,0,true,5,10,1!1!1!1!1!0&ab=0,0,#D94B4A,1,1,1,#cccccc,1,0,0,#B243B1,1,0,0,#98E09A,1,false&a=hydrologic,0.35,false&s=0,0,0.9,0.9,false&n=false,#72afe9,0.9,0,0.9,0,0.9,false&p=false,0.75,0,7,0,1,2026,11,13,0,false&d=0,0,1,1,1,1,1,1,#006EFF,1,#006EFF,1,#006EFF,false&q=" target="_blank" rel="noopener">National Weather Service Advanced Hydrologic Prediction Service</a>
+      or <a href="https://cdec.water.ca.gov/" target="_blank" rel="noopener">CDEC</a>.</p>
+    </div>
+  </div>
+
+  <div class="grid kpis kpis-4 mt" id="floodkpirow" data-reveal="fade-up"></div>
+
+  <div class="card mt" data-reveal="fade-up">
+    <header><div>
+      <h3>Stations by flood-risk condition</h3>
+      <div class="sub" id="floodcount"></div>
+    </div><span class="info-icon" data-tip="Streamflow (00060) and gage height / stage (00065) stations. Most stations are compared to their own highest recorded reading in this dataset: Near record high = 90% or more of historic max, Elevated = 75-90%, Normal = below 75%. A few gage-height stations that are also published NWS AHPS flood gauges (marked Official NWS stage) instead use that gauge's real published action/flood stage thresholds. Stations need at least 30 historical readings for a parameter to be scored." aria-label="Flood watch methodology" tabindex="0">i</span></header>
+    <div class="body">
+      <div class="filters" style="margin-bottom:8px">
+        <label class="fl" for="flood-search">Search stations</label>
+        <input class="txt" id="flood-search" type="search" placeholder="Filter by name or ID…">
+        <label class="fl" for="flood-tier">Condition</label>
+        <select class="sel" id="flood-tier">
+          <option value="">All conditions</option>
+          <option value="near_record">Near record high</option>
+          <option value="elevated">Elevated</option>
+          <option value="normal">Normal</option>
+        </select>
+        <label class="fl" for="flood-source">Threshold source</label>
+        <select class="sel" id="flood-source">
+          <option value="">All sources</option>
+          <option value="official">Official NWS stage</option>
+          <option value="self_referential">Dataset-relative</option>
+        </select>
+      </div>
+      <div class="tablescroll" id="floodtablewrap" tabindex="0" role="region" aria-label="Flood watch stations, table">
+        <table>
+          <thead><tr>
+            <th class="sortable" data-sort="name" aria-sort="none"><button type="button" class="sortbtn">Station</button></th>
+            <th class="sortable" data-sort="parameter" aria-sort="none"><button type="button" class="sortbtn">Parameter</button></th>
+            <th class="sortable num" data-sort="current" aria-sort="none"><button type="button" class="sortbtn">Current value</button></th>
+            <th class="sortable num" data-sort="historic" aria-sort="none"><button type="button" class="sortbtn">Historic max</button></th>
+            <th class="sortable num" data-sort="pct" aria-sort="none"><button type="button" class="sortbtn">% of record</button></th>
+            <th class="sortable" data-sort="tier" aria-sort="ascending"><button type="button" class="sortbtn">Condition</button></th>
+            <th>Threshold source</th>
+            <th class="sortable num" data-sort="records" aria-sort="none"><button type="button" class="sortbtn">Records total</button></th>
+            <th>Last reading (UTC)</th>
+          </tr></thead>
+          <tbody id="floodrows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STATION DETAIL ================= -->
+<section role="tabpanel" aria-labelledby="tab-detail" id="p-detail" class="hidden">
+  <h2 class="sr-only">Station detail</h2>
+  <div class="filters mt">
+    <label class="fl" for="detail-station">Station</label>
+    <select class="sel" id="detail-station"><option value="">Select a station</option></select>
+    <div class="spacer"></div>
+    <button class="btn ghost" id="backtomap">&larr; Back to map</button>
+    <button class="btn" id="detail-download">Download this time series and station data</button>
+  </div>
+
+  <div class="card" style="position:relative" data-reveal="fade-up"><span class="info-icon" data-tip="Selected station name, source system, and key metadata" aria-label="Selected station name, source system, and key metadata" tabindex="0" style="position:absolute;top:10px;right:10px;z-index:2">i</span><div class="body">
+    <div class="detailhead">
+      <div style="flex:1 1 240px;min-width:0">
+        <div class="eyebrow" id="deyebrow">Station</div>
+        <h2 style="margin-top:5px" id="dtitle">No station selected</h2>
+        <div class="metarow" id="dmeta"></div>
+      </div>
+    </div>
+  </div></div>
+
+  <div class="card mt" style="position:relative" data-reveal="fade-up"><span class="info-icon" data-tip="Time-series charts, station metadata, and data access policy for the selected station" aria-label="Time-series charts, station metadata, and data access policy" tabindex="0" style="position:absolute;top:10px;right:10px;z-index:2">i</span>
+    <div class="subtabs" role="tablist" aria-label="Station detail views">
+      <button class="subtab" role="tab" id="subtab-series" aria-controls="sub-series" aria-selected="true"  data-s="series">Time series</button>
+      <button class="subtab" role="tab" id="subtab-info" aria-controls="sub-info" aria-selected="false" data-s="info">Station information</button>
+      <button class="subtab" role="tab" id="subtab-access" aria-controls="sub-access" aria-selected="false" data-s="access">Data access policy</button>
+    </div>
+
+    <div class="body" id="sub-series" role="tabpanel" aria-labelledby="subtab-series">
+      <div class="filters" style="margin-bottom:12px">
+        <label class="fl" for="detail-param">Parameter</label>
+        <select class="sel" id="detail-param"></select>
+        <div class="segs" id="detailrange" role="group" aria-label="Time range">
+          <button class="seg" aria-pressed="false" data-d="1">24 h</button>
+          <button class="seg" aria-pressed="false" data-d="7">7 d</button>
+          <button class="seg" aria-pressed="true"  data-d="14">14 d</button>
+          <button class="seg" aria-pressed="false" data-d="365">1 y</button>
+          <button class="seg" aria-pressed="false" data-d="99999">All</button>
+        </div>
+        <label class="fl" for="detail-from">From</label>
+        <input class="txt date" id="detail-from" type="date">
+        <label class="fl" for="detail-to">To</label>
+        <input class="txt date" id="detail-to" type="date">
+        <button type="button" class="btn ghost" id="detail-dates-clear">Clear dates</button>
+        <div class="spacer"></div>
+        <span style="font-size:11.5px;color:var(--ink-3)">Dates and times in UTC</span>
+      </div>
+      <div class="filters" style="margin-bottom:12px">
+        <span class="fl">View</span>
+        <div class="segs" id="seriesview" role="group" aria-label="Time series view">
+          <button class="seg" type="button" aria-pressed="false" data-v="table">Table</button>
+          <button class="seg" type="button" aria-pressed="false" data-v="chart">Chart</button>
+          <button class="seg" type="button" aria-pressed="true"  data-v="both">Chart + table</button>
+        </div>
+      </div>
+      <div class="legend" id="serieslegend"></div>
+      <div class="split ts-split" id="seriessplit">
+        <div class="chartbox" id="serieschart">
+          <div class="placeholder">Select a station to view its time series.</div>
+        </div>
+        <div class="tablescroll" id="seriestable" tabindex="0" role="region" aria-label="Time series data, table"></div>
+      </div>
+      <div class="footnote" id="seriesfoot"></div>
+    </div>
+
+    <div class="body hidden" id="sub-info" role="tabpanel" aria-labelledby="subtab-info">
+      <div id="stationinfo"><div class="placeholder">Select a station.</div></div>
+    </div>
+
+    <div class="body hidden" id="sub-access" role="tabpanel" aria-labelledby="subtab-access">
+      <div class="acclist" id="accesslist"><div class="placeholder">Select a station.</div></div>
+      <div class="footnote">
+        Access codes come from the landowner data-access form and are enforced in the
+        Snowflake <code>_PUBLIC</code> views before this dashboard is built.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= COMPARE ================= -->
+<section role="tabpanel" aria-labelledby="tab-compare" id="p-compare" class="hidden">
+  <h2 class="sr-only">Compare stations</h2>
+  <div class="filters mt">
+    <label class="fl" for="compare-param">Parameter</label>
+    <select class="sel" id="compare-param"></select>
+    <div class="segs" id="comparerange" role="group" aria-label="Time range">
+      <button class="seg" aria-pressed="false" data-d="7">7 d</button>
+      <button class="seg" aria-pressed="true"  data-d="30">30 d</button>
+      <button class="seg" aria-pressed="false" data-d="365">1 y</button>
+      <button class="seg" aria-pressed="false" data-d="99999">All</button>
+    </div>
+    <label class="fl" for="compare-from">From</label>
+    <input class="txt date" id="compare-from" type="date">
+    <label class="fl" for="compare-to">To</label>
+    <input class="txt date" id="compare-to" type="date">
+    <button type="button" class="btn ghost" id="compare-dates-clear">Clear dates</button>
+    <div class="spacer"></div>
+    <button class="btn" id="compare-download" disabled>Download Selected Stations Data</button>
+    <span style="font-size:11.5px;color:var(--ink-3)">Pick up to 4 stations</span>
+  </div>
+
+  <div class="split2">
+    <div class="card" data-reveal="fade-up">
+      <header><div>
+        <h3>Stations</h3>
+        <div class="sub">Only stations reporting the selected parameter</div>
+      </div><span class="info-icon" data-tip="Select up to 4 stations that report the chosen parameter for side-by-side comparison" aria-label="Select up to 4 stations reporting the chosen parameter" tabindex="0">i</span></header>
+      <div class="body" style="padding:8px">
+        <div class="filters" style="margin-bottom:8px">
+          <label class="fl" for="compare-search">Search</label>
+          <input class="txt" id="compare-search" type="search" placeholder="Search station name or ID…">
+        </div>
+        <div class="tablescroll" style="max-height:520px" id="comparepicker"></div>
+      </div>
+    </div>
+    <div class="card" data-reveal="fade-up">
+      <header><div>
+        <h3 id="comparetitle">Comparison</h3>
+        <div class="sub" id="comparesub" aria-live="polite">Select stations to overlay their series</div>
+      </div><span class="info-icon" data-tip="Overlaid time series for the selected stations, showing how the chosen parameter compares across sites" aria-label="Overlaid time series for selected stations" tabindex="0">i</span></header>
+      <div class="body">
+        <div class="legend" id="comparelegend"></div>
+        <div class="chartbox" id="comparechart">
+          <div class="placeholder">Choose one or more stations from the list.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= AQUARIUS TIERS (ARCHIVED) =================
+     Tab button removed from the tablist above; entire panel commented out
+     below. Uncomment both to restore this tab. -->
+<!--
+<section role="tabpanel" aria-labelledby="tab-aquarius" id="p-aquarius" class="hidden">
+  <h2 class="sr-only">Aquarius QC tiers</h2>
+  <div class="filters mt">
+    <label class="fl" for="aq-param">Parameter</label>
+    <select class="sel" id="aq-param"></select>
+    <div class="segs" id="aqrange" role="group" aria-label="Time range">
+      <button class="seg" aria-pressed="false" data-d="7">7 d</button>
+      <button class="seg" aria-pressed="true"  data-d="30">30 d</button>
+      <button class="seg" aria-pressed="false" data-d="365">1 y</button>
+      <button class="seg" aria-pressed="false" data-d="99999">All</button>
+    </div>
+    <div class="spacer"></div>
+    <span style="font-size:11.5px;color:var(--ink-3)">Aquarius QC tiers S1–S5 · click a tier to hide or show it</span>
+  </div>
+
+  <div class="split2">
+    <div class="card">
+      <header><div>
+        <h3>Stations</h3>
+        <div class="sub">Aquarius stations reporting the selected parameter</div>
+      </div></header>
+      <div class="body" style="padding:8px">
+        <div class="tablescroll" style="max-height:520px" id="aqpicker"></div>
+      </div>
+    </div>
+    <div class="card">
+      <header><div>
+        <h3 id="aqtitle">Tier comparison</h3>
+        <div class="sub" id="aqsub" aria-live="polite">Choose a station from the list</div>
+      </div></header>
+      <div class="body">
+        <div class="legend" id="aqlegend"></div>
+        <div class="chartbox" id="aqchart">
+          <div class="placeholder">Choose a station from the list.</div>
+        </div>
+        <div class="tablescroll mt" id="aqcoverage" tabindex="0" role="region" aria-label="Readings per QC tier, table"></div>
+        <div class="footnote" id="aqwithheld"></div>
+      </div>
+    </div>
+  </div>
+</section>
+-->
+
+<!-- ================= EXPLORE STUDY STATIONS ================= -->
+<section role="tabpanel" aria-labelledby="tab-explore" id="p-explore" class="hidden">
+  <h2 class="sr-only">Explore Study Stations</h2>
+
+  <div class="note testenv" id="exp-banner" role="status" aria-live="polite"></div>
+
+  <div class="card mt" style="position:relative" data-reveal="fade-up"><span class="info-icon" data-tip="Compare Aquarius processing stages S1-S5 and sensor, telemetry and equipment groupings for one study station." aria-label="About the Explore Study Stations filters" tabindex="0" style="position:absolute;top:10px;right:10px;z-index:2">i</span>
+    <header><div>
+      <h3>Choose what to compare</h3>
+      <div class="sub">Each selected grouping is drawn as its own chart so the scales stay readable</div>
+    </div></header>
+    <div class="body">
+      <div class="filters">
+        <label class="fl" for="exp-station">Select station</label>
+        <select class="sel" id="exp-station"></select>
+        <label class="fl" for="exp-param">Select parameter</label>
+        <select class="sel" id="exp-param"></select>
+      </div>
+      <div class="filters">
+        <label class="fl" for="exp-sensor">Sensor type</label>
+        <select class="sel" id="exp-sensor"></select>
+        <span class="fl" id="exp-stages-label">Aquarius Stage</span>
+        <fieldset class="segs" id="expstages" role="group" aria-labelledby="exp-stages-label" style="margin:0">
+          <legend class="sr-only">Aquarius stages to show</legend>
+        </fieldset>
+        <div class="spacer"></div>
+        <span class="fl" id="exp-groupby-label">Group By</span>
+        <div class="segs green" id="exp-groupby" role="group" aria-labelledby="exp-groupby-label">
+          <!-- Labels name what the LINES inside each chart are grouped by, which
+               is the opposite dimension to the one that picks the chart. data-g
+               and the pressed defaults are unchanged, so charts render exactly
+               as before; only which label is highlighted differs. -->
+          <button type="button" class="seg" aria-pressed="false" data-g="sensor">Stages</button>
+          <button type="button" class="seg" aria-pressed="true"  data-g="stages">Sensor</button>
+        </div>
+      </div>
+      <div class="filters">
+        <label class="fl" for="exp-telem">Telemetry type</label>
+        <select class="sel" id="exp-telem"></select>
+        <label class="fl" for="exp-equip">Equipment type</label>
+        <select class="sel" id="exp-equip"></select>
+        <div class="spacer"></div>
+        <span class="fl" id="exp-markers-label">Line Markers</span>
+        <div class="segs purple" id="exp-markers" role="group" aria-labelledby="exp-markers-label">
+          <button type="button" class="seg" aria-pressed="true"  data-m="overlap">Overlap</button>
+          <button type="button" class="seg" aria-pressed="false" data-m="jitter">Jitter</button>
+        </div>
+      </div>
+      <div class="filters" style="margin-bottom:0">
+        <div class="segs" id="exprange" role="group" aria-label="Time range">
+          <button class="seg" aria-pressed="false" data-d="7">7 d</button>
+          <button class="seg" aria-pressed="false" data-d="30">30 d</button>
+          <button class="seg" aria-pressed="true"  data-d="365">1 y</button>
+          <button class="seg" aria-pressed="false" data-d="99999">All</button>
+        </div>
+        <label class="fl" for="exp-from">From</label>
+        <input class="txt date" id="exp-from" type="date">
+        <label class="fl" for="exp-to">To</label>
+        <input class="txt date" id="exp-to" type="date">
+        <button type="button" class="btn ghost" id="exp-dates-clear">Clear dates</button>
+        <span style="font-size:11.5px;color:var(--ink-3)">Dates in UTC</span>
+        <div class="spacer"></div>
+        <div class="segs" id="exp-view-seg" role="group" aria-label="Result view" aria-controls="expgrid">
+          <button type="button" class="seg" aria-pressed="true"  data-v="graph">Graph view</button>
+          <button type="button" class="seg" aria-pressed="false" data-v="table">Table view</button>
+        </div>
+      </div>
+      <div class="footnote" id="expsub" aria-live="polite" style="margin-top:8px"></div>
+    </div>
+  </div>
+
+  <div class="grid mt" id="expgrid"></div>
+
+  <div class="card mt" style="position:relative" data-reveal="fade-up">
+    <header><div>
+      <h3>What the stages and groupings mean</h3>
+      <div class="sub">A guide to reading these charts</div>
+    </div><span class="info-icon" data-tip="Explains the five Aquarius processing stages (S1 to S5) and the sensor, telemetry and equipment groupings used to label these charts" aria-label="Explains the Aquarius processing stages and the sensor, telemetry and equipment groupings" tabindex="0">i</span></header>
+    <div class="body">
+      <p>Stations are processed in five stages. Each stage adds more cleanup, so the same reading can appear several times at different levels of review.</p>
+      <ul>
+        <li><b>S1 - raw</b>: the sensor reading exactly as it arrived, with no conversion or review. Expect gaps, spikes and dropouts here. This is the right stage for checking whether telemetry is getting through.</li>
+        <li><b>S2 - converted</b>: the same data converted into feet in the local datum, so the numbers are comparable between sites.</li>
+        <li><b>S3 - automatic checks</b>: automated quality control screening has flagged or removed obviously bad values.</li>
+        <li><b>S4 - reviewed</b>: a hydrologist has manually screened the record and applied corrections informed by field visits.</li>
+        <li><b>S5 - final</b>: the published record for the water year. It may be assembled from the best parts of several S4 series.</li>
+      </ul>
+      <p>The other groupings describe where each reading came from:</p>
+      <ul>
+        <li><b>Sensor type</b>: the instrument that took the measurement, such as a pressure transducer (PT), bubbler, radar, or water quality sensor (WQ). Where two of the same sensor are installed at one site they are labelled PT1 and PT2.</li>
+        <li><b>Telemetry type</b>: how the reading was transmitted back, by cellular, satellite or LoRa, or collected on site as logged data.</li>
+        <li><b>Equipment type</b>: which piece of equipment reported the value. At LoRa sites that monitor two batteries, these appear as pico and digi.</li>
+        <li><b>Default</b>: readings with no sensor, telemetry, or equipment metadata are grouped under this label.</li>
+      </ul>
+      <p class="footnote">Two notes that explain gaps you may see. Where one sensor sends data over several telemetry paths, only one of those series is carried through to S4, because manually reviewing all of them would be duplicated effort; compare those at S1 instead. And parameters outside the study goals, such as battery voltage, are only ever processed to S1.</p>
+    </div>
+  </div>
+</section>
+<!-- ================= DOWNLOAD ================= -->
+<section role="tabpanel" aria-labelledby="tab-download" id="p-download" class="hidden">
+  <h2 class="sr-only">Download measurements</h2>
+  <div class="card mt" data-reveal="fade-up">
+    <header><div>
+      <h3>Download measurements</h3>
+      <div class="sub">CSV export of the prepared, build-time aggregated series</div>
+    </div><span class="info-icon" data-tip="Export measurement data as CSV. Filter by date range, data source, station, and parameter before downloading. Choose Regular CSV for a plain export, or CalWATRS format for a file shaped for CalWATRS reporting upload." aria-label="Export measurement data as CSV with filters" tabindex="0">i</span></header>
+    <div class="body">
+      <div class="filters">
+        <label class="fl" for="dl-from">From</label>
+        <input class="txt date" id="dl-from" type="date">
+        <label class="fl" for="dl-to">To</label>
+        <input class="txt date" id="dl-to" type="date">
+        <button type="button" class="btn ghost" id="dl-dates-clear">Clear dates</button>
+        <span style="font-size:11.5px;color:var(--ink-3)">Dates in UTC</span>
+        <div class="spacer"></div>
+        <button type="button" class="btn ghost" id="dl-preview-toggle" aria-pressed="false" aria-controls="dl-preview-panel">Preview</button>
+        <div class="segs" id="dl-format-seg" role="group" aria-label="Download format">
+          <button type="button" class="seg" aria-pressed="true" data-fmt="standard">Regular CSV</button>
+          <button type="button" class="seg" aria-pressed="false" data-fmt="calwatrs">CalWATRS format</button>
+        </div>
+        <button class="btn" id="dl-go" disabled>Download CSV</button>
+      </div>
+      <div class="footnote" id="dl-format-note" style="margin-top:6px"></div>
+      <div class="note error hidden compact" id="dl-page-note" role="status" aria-live="polite" style="margin-top:10px"></div>
+
+      <div class="dl-body" id="dl-body">
+      <div class="dl-main">
+      <div class="filters" style="margin-top:12px;align-items:flex-start">
+        <fieldset style="border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;margin:0;flex:1 1 100%">
+          <legend class="fl" style="padding:0 4px">Data sources &amp; stations <span class="footnote" id="dl-station-count" aria-live="polite"></span></legend>
+          <div class="filters" style="margin-bottom:8px;align-items:flex-start">
+            <span class="fl" id="dl-source-filter-label">Select data source(s)</span>
+            <div id="dl-source-filter" class="sourcechips" role="group" aria-labelledby="dl-source-filter-label"></div>
+          </div>
+          <div class="filters" style="margin-bottom:8px">
+            <label class="fl" for="dl-station-search">Search stations</label>
+            <input class="txt" id="dl-station-search" type="search" placeholder="Filter by name or ID…">
+          </div>
+          <div id="dl-source-tree" class="sourcetree tablescroll" style="max-height:300px"></div>
+        </fieldset>
+      </div>
+
+      <div class="filters" style="margin-top:12px;align-items:flex-start">
+        <fieldset style="border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;margin:0;flex:1 1 100%">
+          <legend class="fl" style="padding:0 4px">Parameters <span class="footnote" id="dl-param-count" aria-live="polite"></span></legend>
+          <div class="filters" style="margin-bottom:8px">
+            <button type="button" class="btn ghost" id="dl-param-all">Select all</button>
+            <button type="button" class="btn ghost" id="dl-param-none">Clear all</button>
+          </div>
+          <div id="dl-param-rows" class="paramgrid"></div>
+        </fieldset>
+      </div>
+
+      <div id="dlnote" class="footnote"></div>
+      </div>
+
+      <div class="dl-preview hidden" id="dl-preview-panel" role="region" aria-label="Download data preview">
+        <div class="card" style="height:100%" data-reveal="fade-up">
+          <header><div>
+            <h3>Download Data Preview</h3>
+            <div class="sub">Summary and sample of what will be downloaded</div>
+          </div></header>
+          <div class="body" id="dl-preview-content">
+            <div class="placeholder">Select stations to see a preview.</div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mt" data-reveal="fade-up">
+    <header><div>
+      <h3>Station metadata</h3>
+      <div class="sub">Station list, parameter list and data dictionary as CSV files</div>
+    </div><span class="info-icon" data-tip="Download the list of every station with its location, watershed, period of record and data access codes, the list of parameters with their units, and a data dictionary describing every column." aria-label="Download station metadata, parameter list and data dictionary" tabindex="0">i</span></header>
+    <div class="body">
+      <div class="filters" style="margin-bottom:0">
+        <a class="btn" data-file="rrts_station_metadata.csv" href="downloads/rrts_station_metadata.csv" download>Station metadata (CSV)</a>
+        <a class="btn ghost" data-file="rrts_parameters.csv" href="downloads/rrts_parameters.csv" download>Parameters (CSV)</a>
+        <a class="btn ghost" data-file="rrts_data_dictionary.csv" href="downloads/rrts_data_dictionary.csv" download>Data dictionary (CSV)</a>
+      </div>
+      <div class="footnote">
+        Generated with each dashboard build. Coordinates follow each station's data access agreement:
+        restricted locations are a random point within the station's watershed, and hidden locations are left blank.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= HELP & RESOURCES ================= -->
+<section role="tabpanel" aria-labelledby="tab-help" id="p-help" class="hidden">
+  <h2 class="sr-only">Help and Resources</h2>
+  <div class="card mt" data-reveal="fade-up">
+    <header><div>
+      <h3>Dashboard Guide</h3>
+      <div class="sub"> Short description on dashboard tabs. Select one to jump there</div>
+    </div><span class="info-icon" data-tip="Quick navigation to each dashboard tab with a brief description of what it shows" aria-label="Quick navigation to each dashboard tab" tabindex="0">i</span></header>
+    <div class="body">
+      <p class="footnote" style="margin-top:0;margin-bottom:12px">
+        Hover over the <strong>i</strong> icon in the top-right corner of any card to see a brief description of what that card shows. Try it out here <span class="info-icon" data-tip="Hover or focus this icon to see a brief description of what the card shows" aria-label="Example info icon" tabindex="0" style="display:inline-flex;vertical-align:middle;margin-left:4px">i</span>
+      </p>
+      <div class="help-nav-grid">
+        <div class="help-nav-item" role="button" tabindex="0" data-p="home" aria-label="Go to Home tab">
+          <h4>Home</h4>
+          <p>Background on the Russian River Telemetry Study.</p>
+        </div>
+        <div class="help-nav-item" role="button" tabindex="0" data-p="overview" aria-label="Go to Station Overview tab">
+          <h4>Station Overview</h4>
+          <p>Network-wide status: how many stations are reporting, by data source, plus overall KPIs.</p>
+        </div>
+        <div class="help-nav-item" role="button" tabindex="0" data-p="map" aria-label="Go to Station Map tab">
+          <h4>Station Map</h4>
+          <p>An interactive map of every study station, showing location and current reporting status.</p>
+        </div>
+        <div class="help-nav-item" role="button" tabindex="0" data-p="detail" aria-label="Go to Station Detail tab">
+          <h4>Station Detail</h4>
+          <p>Time-series charts and metadata for a single selected station.</p>
+        </div>
+        <div class="help-nav-item" role="button" tabindex="0" data-p="explore" aria-label="Go to Explore Study Stations tab">
+          <h4>Explore Study Stations</h4>
+          <p>Compare the five Aquarius processing stages, from raw sensor output to the final published record, for one station and parameter.</p>
+        </div>
+        <div class="help-nav-item" role="button" tabindex="0" data-p="flood" aria-label="Go to Flood Watch tab">
+          <h4>Flood Watch</h4>
+          <p>See which stations currently show elevated or near-record conditions, using dataset history or official NWS flood stages where available.</p>
+        </div>
+        <div class="help-nav-item" role="button" tabindex="0" data-p="download" aria-label="Go to Download tab">
+          <h4>Download</h4>
+          <p>Export the prepared, build-time aggregated measurement series as a CSV file, plus station metadata and a data dictionary.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mt" data-reveal="fade-up">
+    <header><div>
+      <h3>Understanding station status</h3>
+      <div class="sub">What the Network Status card and station status tags mean</div>
+    </div><span class="info-icon" data-tip="Definitions of all station status levels shown in the Network Status card and station lists" aria-label="Definitions of station status levels" tabindex="0">i</span></header>
+    <div class="body">
+      <p>The <strong>Network status of stations reporting data</strong> card on the Station Overview page
+        breaks down all station records by reporting recency and data access policy level.
+        Each station's status reflects the landowner's data-sharing agreement for that site.
+        It does not depend on whether the station's location is shown precisely,
+        generalized to a watershed area, or withheld. Location visibility is shown separately on the
+        station detail page and map.</p>
+      <ul class="resourcelist">
+        <li><span class="pill p-live">Reporting (24 h)</span> : The station has reported a reading within
+          the last 24 hours. Parameter readings and CSV download are both available.</li>
+        <li><span class="pill p-recent">Last 30 days</span> : The station has reported a reading within
+          the last 30 days but not within the last 24 hours.</li>
+        <li><span class="pill p-dormant">Dormant (>30 d)</span> : The station has not reported a reading
+          in over 30 days. Data may still be available for download.</li>
+        <li><span class="pill p-limited">Limited by policy</span> : Either the parameter readings or the CSV
+          download is withheld by the landowner's data-sharing agreement, but not both.
+          The station may still show some data on the dashboard.</li>
+        <li><span class="pill p-restricted">Restricted by policy</span> : Both parameter readings and CSV download
+          are withheld by the landowner's data-sharing agreement for this station.
+          No data is visible on the dashboard and no download is available.</li>
+        <li><span class="pill p-setup-pending">Setup pending</span> : The station is configured in the study
+          roster but has not yet ingested any data. This typically means the station is not yet set up
+          or is awaiting initial data collection.</li>
+        <li><span class="pill p-unknown">No data</span> : No readings have been received yet, or recency
+          could not be determined (non-Aquarius stations with no data).</li>
+      </ul>
+      <p class="footnote" style="margin-top:14px">
+        <strong>Note:</strong> The "Aquarius stations" card on the Station Overview page uses a different
+        classification <strong>(Live reporting, Data not published, and Setup pending)</strong>
+        which reflects how many readings are actually visible to dashboard users, not the policy level.
+        A station can be "Restricted by policy" in the Network Status card yet still show some published
+        readings in the Aquarius card (e.g., in an internal build), or vice versa.
+      </p>
+    </div>
+  </div>
+
+  <div class="card mt" data-reveal="fade-up">
+    <header><div>
+      <h3>Aquarius station publication status</h3>
+      <div class="sub">What "Live reporting", "Data not published", and "Setup pending" mean for Aquarius stations</div>
+    </div><span class="info-icon" data-tip="Definitions of the Aquarius station publication categories shown in the Aquarius stations card: Live reporting, Data not published, and Setup pending" aria-label="Definitions of Aquarius station publication categories" tabindex="0">i</span></header>
+    <div class="body">
+      <p>The <strong>Aquarius stations</strong> card on the Station Overview page classifies each
+        Aquarius station by how much of its data is actually visible to dashboard users.
+        This is different from the Network Status card, which reflects the policy level.</p>
+      <ul class="resourcelist">
+        <li><span class="pill p-live">Live reporting</span> : All of the station's readings are published
+          and visible on the dashboard. The station is actively reporting data and the landowner's
+          data-sharing agreement allows full publication.</li>
+        <li><span class="pill p-limited">Partially published</span> : Some of the station's readings are
+          visible on the dashboard while others are withheld by the landowner's data-sharing agreement
+          or by policy. The station is reporting, but not all data is accessible.</li>
+        <li><span class="pill p-restricted">Data not published</span> : None of the station's readings are
+          visible on the dashboard, and the station has two or more readings withheld by the landowner's
+          data-sharing agreement or by policy. The station has data in the system but it is fully restricted.</li>
+        <li><span class="pill p-setup-pending">Setup pending</span> : The station is configured in the study
+          roster but has not yet ingested meaningful data (zero or one reading withheld). This means the
+          station is not yet set up, is awaiting initial data collection, or the telemetry equipment has
+          not yet been installed and commissioned.</li>
+      </ul>
+      <p class="footnote" style="margin-top:14px">
+        <strong>Note:</strong> A station's publication status in this card may differ from its status in
+        the Network Status card. For example, a station may be "Restricted by policy" in the Network Status
+        card (both parameters and download withheld) yet still show "Live reporting" here if some readings
+        are visible in an internal build. Conversely, a station may show "Data not published" here while
+        being "Limited by policy" in the Network Status card.
+      </p>
+    </div>
+  </div>
+
+  <div class="card mt" data-reveal="fade-up">
+    <header><div>
+      <h3>Understanding location status</h3>
+      <div class="sub">What the location status shown on the Station Detail page and map means</div>
+    </div><span class="info-icon" data-tip="Definitions of the location precision levels: Precise, In HUC12, In HUC10, In HUC8, and Hidden. Restricted locations use Constrained Geomasking (a random point is selected within the HUC watershed boundary)." aria-label="Definitions of location precision levels" tabindex="0">i</span></header>
+    <div class="body">
+      <p>The <strong>Location Status</strong> shown on the Station Detail page and in the station list
+        on the Station Map page reflects the landowner's data-sharing agreement for the station's
+        geographic coordinates. It is independent of the station's data reporting status.
+        Restricted locations are masked using <strong>Constrained Geomasking</strong>: a random point
+        is selected within the HUC watershed boundary, so the displayed point is always inside the
+        correct watershed but does not reveal the exact station position.</p>
+      <ul class="resourcelist">
+        <li><span class="pill p-loc-precise">Precise</span> : Exact latitude and longitude coordinates
+          are shown on the map and in the station detail. The station appears as a small dot.</li>
+        <li><span class="pill p-loc-huc">In HUC12</span> : A random point is selected within the HUC12
+          watershed boundary. The station appears as a small semi-transparent bubble on the map.</li>
+        <li><span class="pill p-loc-huc">In HUC10</span> : A random point is selected within the HUC10
+          watershed boundary. The station appears as a medium semi-transparent bubble on the map.</li>
+        <li><span class="pill p-loc-huc">In HUC8</span> : A random point is selected within the HUC8
+          watershed boundary. The station appears as a large semi-transparent bubble on the map.</li>
+        <li><span class="pill p-loc-hidden">Hidden</span> : Coordinates are fully withheld by the landowner's
+          data-sharing agreement. The station does not appear on the map and its location is not shown
+          in the station detail.</li>
+      </ul>
+      <p class="footnote" style="margin-top:14px">
+        <strong>Note:</strong> Location status does not affect whether data is visible or downloadable.
+        A station can have "Hidden" location status while still reporting data and allowing downloads.
+      </p>
+    </div>
+  </div>
+
+  <div class="card mt" data-reveal="fade-up">
+    <header><div>
+      <h3>Why compare multiple Aquarius processing stages?</h3>
+      <div class="sub">The reasoning behind the five processing stages shown on the Explore Study Stations page</div>
+    </div><span class="info-icon" data-tip="Background on why the dashboard lets you compare raw, intermediate, and final Aquarius processing stages side by side" aria-label="Background on comparing Aquarius processing stages" tabindex="0">i</span></header>
+    <div class="body">
+      <p>The Explore Study Stations page lets you compare a station's reading across five Aquarius processing stages, from the rawest logged sensor output through to the final, reviewed record. There are two main reasons for showing all of them instead of just the final value.</p>
+      <p>First, comparing stages is a <strong>quality assurance</strong> check. It lets staff track how a reading changes at each step of data transformation, so unexpected or unwanted changes introduced during processing can be caught rather than assumed away.</p>
+      <p>Second, reporters submit data at different levels of formatting: some provide the rawest logged values, while others provide data that has already been cleaned and structured before it ever reaches this system. Comparing stages side by side helps determine whether there is any real, meaningful difference between those levels, and whether waiting for the final, late-reviewed stage actually adds real value compared to using an earlier, faster-available stage.</p>
+      <p class="footnote" style="margin-top:10px">
+        <strong>Trade-off:</strong> publishing every stage multiplies the amount of data significantly. That cost is
+        worth showing because it illustrates a broader challenge for the study: balancing the quality and quantity
+        of data that is actually needed to make the best water-management decisions.
+      </p>
+    </div>
+  </div>
+
+  <div class="card mt" data-reveal="fade-up">
+    <header><div>
+      <h3>Why do stations use different sensors and telemetry?</h3>
+      <div class="sub">Why equipment and transmission methods vary from station to station</div>
+    </div><span class="info-icon" data-tip="Background on why monitoring stations across the study use different sensors, equipment, and telemetry types" aria-label="Background on sensor and telemetry differences between stations" tabindex="0">i</span></header>
+    <div class="body">
+      <p>Stations in the study do not all use the same equipment. Some have a single sensor and telemetry type, while others combine more than one. This is a deliberate choice, not an inconsistency, because every site is different.</p>
+      <p>What a station needs to measure, how much power and cellular or satellite signal is available at that location, and how well equipment holds up in cold or harsh conditions, all shape which sensors and transmission methods make sense there. A station optimized for one of these constraints may need a different setup than a station nearby that faces different conditions.</p>
+      <p>In short, the variety of sensors and telemetry types across the study reflects the genuine diversity of California's watersheds, climates, and site conditions, not a lack of standardization.</p>
+    </div>
+  </div>
+
+  <div class="card mt" data-reveal="fade-up">
+    <header><div>
+      <h3>Importance of Flood Watch</h3>
+      <div class="sub">How real-time telemetered data supports timely flood-risk decisions</div>
+    </div><span class="info-icon" data-tip="Why real-time telemetered data matters for flood-risk awareness and decision-making" aria-label="Why the Flood Watch page matters" tabindex="0">i</span></header>
+    <div class="body">
+      <p>Streamflow and water-level conditions can change quickly during storms, so how often a station is checked matters. Traditional manual readings may only happen periodically, which can miss the window when conditions are changing fastest. Telemetered stations report automatically and far more frequently, often multiple times per hour, so rising conditions can be identified in near real time.</p>
+      <p>That earlier notice gives water managers, emergency responders, and the public more time to act: adjusting operations, issuing warnings, planning evacuations, or simply deciding whether to keep a closer eye on a location, before conditions become critical. The Flood Watch page is built on that same real-time data, so it can only highlight a changing condition as quickly as the underlying station is reporting it.</p>
+      <p>This is why continued investment in telemetered monitoring, rather than relying solely on periodic manual readings, directly supports faster, better-informed flood risk management across the watershed.</p>
+    </div>
+  </div>
+
+  <div class="card mt" data-reveal="fade-up">
+    <header><div>
+      <h3>How is flood risk calculated?</h3>
+      <div class="sub">What drives the condition shown on the Flood Watch page</div>
+    </div><span class="info-icon" data-tip="Plain-language explanation of how the Flood Watch condition, threshold source, and percent of record are calculated" aria-label="How flood risk is calculated" tabindex="0">i</span></header>
+    <div class="body">
+      <p>The Flood Watch page only looks at two kinds of readings: streamflow and gage height (water surface elevation, also called stage). These are the two measurements that drive flood-risk pages on NWS, CDEC, and USGS sites, and they are the only ones RRTS stations report often enough to support this feature.</p>
+      <p>A station and parameter only shows up on the page once it has at least 30 historical readings in this dataset. Below that, there is not enough history to meaningfully say a reading is "near a record," so the station is left out of Flood Watch entirely until it has enough data.</p>
+      <p><strong>Two different methods decide the condition, depending on the station:</strong></p>
+      <ul class="resourcelist">
+        <li><strong>Official NWS stage.</strong> A small number of gage-height stations are also published National Weather Service flood-forecast gauges with real, publicly issued thresholds: an action stage and a minor flood stage, in feet. For these stations, the current reading is compared directly to those published thresholds. At or above minor flood stage (the NWS's own definition of flood stage) is shown as Near record high, at or above action stage but below minor flood stage is Elevated, and below action stage is Normal. A few gauges only publish a flood stage with no separate action stage; for those, 75% of the published flood stage is used as the elevated watch point instead, so the Elevated tier is not skipped.</li>
+        <li><strong>Dataset-relative.</strong> For every other station, including all streamflow readings, there is no published official threshold to compare against. Instead, the station's current reading is compared to the single highest reading ever recorded for that station and parameter in the RRTS dataset ("percent of record"). 90% or more of that historic max is Near record high, 75 to 90% is Elevated, and below 75% is Normal. This is a relative, dataset-specific comparison, not an officially recognized flood threshold, which is why the table labels it "Dataset-relative" rather than citing a flood stage.</li>
+      </ul>
+      <p class="footnote" style="margin-top:10px">
+        <strong>Important:</strong> the condition shown is based only on the single most recent reading at the time of the last dashboard build. It is not a sustained-duration measure: there is no requirement that a reading stay elevated for any length of time, and no trend or rate-of-rise is factored in. A single unusually high or noisy reading can move a station into a higher tier, and the next reading can move it back down. Treat Flood Watch as a quick, build-time snapshot of current conditions relative to history, not as an official flood forecast or warning.
+      </p>
+    </div>
+  </div>
+
+  <div class="card mt" data-reveal="fade-up">
+    <header><div>
+      <h3>CalWATRS Reporting Format</h3>
+      <div class="sub">Why the Download tab offers a CalWATRS-formatted export</div>
+    </div><span class="info-icon" data-tip="Background on the CalWATRS data format and how the calculated columns in that export are derived" aria-label="Background on the CalWATRS data format" tabindex="0">i</span></header>
+    <div class="body">
+      <p>
+        Starting Water Year 2027 (October 2026), the State Water Board's updated Water Measurement Regulation
+        requires diverters of more than 10 acre-feet per year to submit standardized measurement data to
+        <a href="https://www.waterboards.ca.gov/waterrights/water_issues/programs/diversion_use/water_measurement.html#how-to-report" target="_blank" rel="noopener">CalWATRS</a>
+        (California Water Accounting, Tracking, and Reporting System). The <strong>CalWATRS format</strong> option on the
+        Download tab builds a file shaped to that standard, with Date, Time, Measured Value, Volume Diverted, and
+        Flow Rate of Diversion columns, each with its units, so it can be used directly for reporting.
+        See the <a href="https://www.waterboards.ca.gov/waterrights/water_issues/programs/diversion_use/docs/2026/measurement-and-reporting-manual-2026-update.pdf" target="_blank" rel="noopener">2026 Measurement and Reporting Manual</a> for full requirements.
+      </p>
+      <p class="footnote" style="margin-top:10px">
+        <strong>How Volume Diverted is calculated:</strong> telemetry sensors record instantaneous <em>flow rate</em>
+        (cubic feet per second), not volume. When a selected station has flow data, Volume Diverted is
+        <em>calculated</em>, not directly measured, by integrating that day's flow readings over time
+        and converting to acre-feet. Flow Rate of Diversion is reported as the measured flow rate itself.
+        Stations without a flow parameter have no diversion data to report, so they are excluded from the CalWATRS
+        export, and a warning is shown on the Download tab.
+      </p>
+      <p class="footnote" style="margin-top:10px">
+        <strong>Note:</strong> only the parameters required for CalWATRS reporting (flow and the volume calculated
+        from it) are included in that export, even if other parameters are selected. Other readings, such as
+        water quality, do not need to be reported in CalWATRS, so they are left out of that file.
+      </p>
+    </div>
+  </div>
+
+  <div class="card mt" data-reveal="fade-up">
+    <header><div>
+      <h3>Help & Resources</h3>
+      <div class="sub">Links and references for the Russian River Telemetry Study</div>
+    </div><span class="info-icon" data-tip="External links and references for the Russian River Telemetry Study" aria-label="External links and references for the study" tabindex="0">i</span></header>
+    <div class="body">
+      <ul class="resourcelist">
+        <li><a href="https://www.waterboards.ca.gov/telemetry/russian-river-study.html" target="_blank" rel="noopener">Telemetry Research Unit | California State Water Resources Control Board</a></li>
+        <li><a href="https://cawaterdata.org/wp-content/uploads/2026/07/Telemetered-Water-Monitoring-Project-Final-Telemetry-Report-ADA.pdf" target="_blank" rel="noopener">Telemetered Water Monitoring Project Final Telemetry Report</a></li>
+        <li><a href="https://www.aquaticinformatics.com/products/aquarius/" target="_blank" rel="noopener">AQUARIUS | Aquatic Informatics</a></li>
+        <li><a href="https://dashboard.waterdata.usgs.gov/app/nwd/en/?region=lower48&amp;aoi=default" target="_blank" rel="noopener">USGS | United States Geological Survey National Water Dashboard</a></li>
+        <li><a href="https://cdec.water.ca.gov/" target="_blank" rel="noopener">CDEC | California Data Exchange Center</a></li>
+        <li><a href="https://www.sonomawater.org/flood-protection" target="_blank" rel="noopener">SonomaOne | Sonoma Water Flood Protection and Gage Data</a></li>
+        <li><a href="https://www.waterqualitydata.us/" target="_blank" rel="noopener">WQX | Water Quality Exchange, Water Quality Portal</a></li>
+        <li><a href="https://data.cnra.ca.gov/" target="_blank" rel="noopener">CNRA | California Natural Resources Agency Open Data</a></li>
+      </ul>
+      <p class="footnote" style="margin-top:14px"><em>Additional resources will be added here as they become available.</em></p>
+    </div>
+  </div>
+</section>
+
+</main><!-- /wrap -->
+
+<footer class="sitefoot"><div class="wrap">
+  See a data problem or want to recommend a dashboard improvement?
+  Email <a href="mailto:telemetry@waterboards.ca.gov">telemetry@waterboards.ca.gov</a>
+</div></footer>
+
+<div class="loading" id="loading" aria-hidden="true"><div class="spinner"></div></div>
+<div class="sr-only" id="sr-status" role="status" aria-live="polite"></div>
+
+<script src="dashboard.js"></script>
+</body>
+</html>
