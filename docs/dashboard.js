@@ -2,7 +2,7 @@
    RRTS Static Dashboard — dashboard.js
    AI-GEN: Claude   AI-DATE: 2026-09-08   AI-REVIEW: Pending human review.
 
-   Loads the build-time JSON produced by src/dashboard/ and drives every
+   Loads the build-time JSON produced by src/dashboard/and drives every
    page: Overview, Station Map, Station Detail, Compare, Download.
 
    DESIGN CONSTRAINTS (deliberate — see RRTS_Static_Dashboard_Feasibility.md)
@@ -752,7 +752,7 @@ function pumpingFor(siteNo) {
 /** "35 min" / "5 h" / "3 d" for a span in milliseconds (non-breaking, so it never wraps mid-span). */
 function spanLabel(ms) {
   const min = Math.max(0, Math.round(ms / 60000));
-  if min < 90) return `${min} min`;
+  if (min < 90) return `${min} min`;
   const h = Math.round(min / 60);
   return h < 48 ? `${h} h` : `${Math.round(h / 24)} d`;
 }
