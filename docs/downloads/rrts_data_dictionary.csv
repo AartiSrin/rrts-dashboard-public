@@ -1,0 +1,38 @@
+file,column,description
+measurement CSV,timestamp_utc,"Date and time of the reading, UTC (ISO 8601)."
+measurement CSV,station_name,Station name.
+measurement CSV,site_key,Dashboard station key: source system plus site number.
+measurement CSV,site_no,Station identifier in its source system.
+measurement CSV,source_system,"Agency or system the reading came from (Aquarius, USGS, CDEC, CNRA, Sonoma OneRain)."
+measurement CSV,parameter_cd,"Parameter code, in the Station Detail download. USGS codes where one exists (00060 = flow); see rrts_parameters.csv."
+measurement CSV,parameter_desc,Parameter name.
+measurement CSV,unit,Unit of the value. Each parameter code has one unit across all sources.
+measurement CSV,value,Reading in the stated unit. Blank where the station's data access agreement withholds it.
+rrts_station_metadata.csv,site_key,Dashboard station key: source system plus site number.
+rrts_station_metadata.csv,site_no,"Station identifier in its source system. Study station codes start with their type: D diversion, W underflow well, S stream, R reservoir, G groundwater."
+rrts_station_metadata.csv,station_name,Station name.
+rrts_station_metadata.csv,source_system,"Agency or system that supplies the station's data (e.g. AQUARIUS, USGS, CDEC, CNRA)."
+rrts_station_metadata.csv,location_type,Aquarius location type. Blank for other sources.
+rrts_station_metadata.csv,equipment_description,Aquarius equipment description. Blank where not recorded or withheld by the data access agreement.
+rrts_station_metadata.csv,latitude,"Published latitude, decimal degrees. See location_precision."
+rrts_station_metadata.csv,longitude,"Published longitude, decimal degrees. See location_precision."
+rrts_station_metadata.csv,location_precision,"How exact the coordinates are: precise; a random point within the HUC12, HUC10 or HUC8 watershed (Constrained Geomasking); or withheld."
+rrts_station_metadata.csv,elevation_ft,"Station elevation, feet, where the source reports one."
+rrts_station_metadata.csv,watershed,"Watershed the station falls in, from the study's HUC polygons."
+rrts_station_metadata.csv,huc_code,Hydrologic Unit Code of the study watershed the station is assigned to.
+rrts_station_metadata.csv,huc_level,HUC level of huc_code.
+rrts_station_metadata.csv,huc_name,Name of the huc_code watershed.
+rrts_station_metadata.csv,first_reading_utc,"Earliest reading in this dashboard build, UTC."
+rrts_station_metadata.csv,last_reading_utc,"Latest reading in this dashboard build, UTC."
+rrts_station_metadata.csv,record_count,Number of readings in this dashboard build.
+rrts_station_metadata.csv,status,"Reporting status: live (last 24 h), recent (last 30 days), dormant, limited or restricted by policy, setup_pending, or unknown."
+rrts_station_metadata.csv,parameters,"Parameter codes published for the station, separated by semicolons."
+rrts_station_metadata.csv,access_location,"Data access code for location: 1 precise; 2, 3, 4 masked to HUC12, HUC10, HUC8; 5 withheld."
+rrts_station_metadata.csv,access_equipment,"Data access code for equipment details: 1 published, 2 withheld."
+rrts_station_metadata.csv,access_events,"Data access code for diversion and site events: 1 published, 2 withheld."
+rrts_station_metadata.csv,access_parameters,"Data access code for readings: 1 published, 2 withheld."
+rrts_station_metadata.csv,access_download,"Data access code for bulk download: 1 offered, 2 withheld."
+rrts_parameters.csv,parameter_cd,Parameter code.
+rrts_parameters.csv,parameter_desc,Parameter name.
+rrts_parameters.csv,unit,Unit every reading of the parameter is published in.
+rrts_parameters.csv,measurement_count,"Number of readings of the parameter in this dashboard build, all stations."
