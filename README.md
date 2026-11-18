@@ -1,15 +1,33 @@
 ﻿# RRTS Public Dashboard
 
-Static public build of the Russian River Telemetry Study dashboard.
+The Russian River Telemetry Study dashboard is published at:
 
-## View locally
+**https://aartisrin.github.io/rrts-dashboard-public/**
+
+## Public build
+
+The GitHub Pages site is built from the `docs/` folder. The frontend and dashboard data share the same folder:
+
+- `docs/index.html`
+- `docs/dashboard.js`
+- `docs/styles.css`
+- `docs/dashboard_data.json`
+- `docs/stations/`
+- `docs/aquarius/`
+- `docs/explore/`
+- `docs/downloads/`
+- `docs/assets/`
+
+## Local preview
+
+From this repository:
 
 ```powershell
 python -m http.server 8000 --directory docs
 ```
 
-Then open http://localhost:8000.
+Then open `http://localhost:8000/`.
 
-## GitHub Pages
+## Deployment
 
-Set Pages source to **Deploy from a branch**, branch `main`, folder `/docs`.
+GitHub Actions deploys the contents of `docs/` to GitHub Pages whenever `main` is updated.
