@@ -496,12 +496,11 @@ function initCardKeyboardNav() {
 }
 
 /**
- * Fetch dashboard_data.json, tolerating the supported output layouts:
- * root, data/, or rrts-dashboard-data/. Whichever answers first becomes
- * the base for station, Aquarius, Explore, and download files.
+ * Fetch dashboard_data.json from the public build root. Station, Aquarius,
+ * Explore, and download files are adjacent to the main JSON in docs/.
  */
 async function loadDashboardData() {
-  const candidates = ["", "data/", "rrts-dashboard-data/"];
+  const candidates = [""];
   let lastErr = null;
   for (const base of candidates) {
     try {
@@ -2149,7 +2148,7 @@ function renderSeries() {
       : [["Value", (r) => (num(r.value ?? r.value_mean) === null ? "—" : num(r.value ?? r.value_mean).toLocaleString())]]);
   table.innerHTML =
     `<table><thead><tr>${tblCols.map(([h]) => `<th${h === "Timestamp (UTC)" ? "" : ' class="num"'}>${esc(h)}${h === "Value" && unit ? ` (${esc(unit)})` : ""}</th>`).join("")}</tr></thead>` +
-    `<tbody>${use.map((r) => `<tr>${tblCols.map(([h, fn], i) => `<td${i ? ' class="num"' : ""}>${esc(fn(r))}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+    `<tbody>${use.map((r) => `<tr>${tblCols.map(([k, fn], i) => `<td${i ? ' class="num"' : ""}>${esc(fn(r))}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
 
   $("#seriesfoot").innerHTML =
     `${cm(use.length)} points shown` +
@@ -2770,7 +2769,7 @@ async function downloadCompareData() {
       return;
     }
 
-    allRows.sort((a, b) => String(a.timestamp_utc).localeCompare(String(b.timestamp_utc)));
+    allRows.sort((a, b) => `${a.site_key}|${a.date}`.localeCompare(`${b.site_key}|${b.date}`));
 
     const cols = ["timestamp_utc", "station_name", "site_key", "parameter_desc", "unit", "value", "source_system", "site_no"]
       .filter((c) => allRows[0][c] !== undefined);
